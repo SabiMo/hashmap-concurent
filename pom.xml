@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>fr.codebusters</groupId>
+    <artifactId>hashmap-concurrent</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>hashmap-concurrent</name>
+    <url>http://maven.apache.org</url>
+
+    <!-- Configuration Java 17 -->
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source> <!-- Version Java source -->
+        <maven.compiler.target>17</maven.compiler.target> <!-- Version Java cible -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- Encodage UTF-8 -->
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Plugin de compilation Maven pour Java -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>17</source> <!-- Version source Java -->
+                    <target>17</target> <!-- Version cible Java -->
+                </configuration>
+            </plugin>
+            
+            <!-- Plugin Maven pour la création du JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version> <!-- Version du plugin -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>fr.codebusters.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
