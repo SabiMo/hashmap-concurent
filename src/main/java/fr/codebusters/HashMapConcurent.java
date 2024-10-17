@@ -1,11 +1,15 @@
 package fr.codebusters;
 
+import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * La classe {@code HashMapConcurent} représente une HashMap implémenté de
  * façon concurente
  */
 public class HashMapConcurent<K, V> {
     private final Node<K, V>[] buckets;
+    private final ReentrantLock[] locks;
     private static final int CAPACITY = 2;
 
     /**
@@ -14,6 +18,8 @@ public class HashMapConcurent<K, V> {
     @SuppressWarnings("unchecked")
     public HashMapConcurent() {
         this.buckets = new Node[CAPACITY];
+        locks = new ReentrantLock[CAPACITY];
+        Arrays.setAll(locks, i -> new ReentrantLock());
     }
 
     /**
@@ -21,7 +27,7 @@ public class HashMapConcurent<K, V> {
      * @return l'indice du bucket dans lequel se trouve (potentielement) l'élément.
      */
     private int getBucketIndex(K key) {
-        return key.hashCode() % CAPACITY;
+        return Math.abs(key.hashCode()) % CAPACITY;
     }
 
     /**
@@ -30,16 +36,21 @@ public class HashMapConcurent<K, V> {
      */
     public synchronized V get(K key) {
         int index = getBucketIndex(key);
-        Node<K, V> node = buckets[index];
 
-        while (node != null) {
-            if (node.key.equals(key)) {
-                return node.value;
+        locks[index].lock();
+        try {
+            Node<K, V> node = buckets[index];
+
+            while (node != null) {
+                if (node.key.equals(key)) {
+                    return node.value;
+                }
+                node = node.next;
             }
-            node = node.next;
+            return null;
+        } finally {
+            locks[index].unlock();
         }
-
-        return null;
     }
 
     /**
@@ -51,22 +62,27 @@ public class HashMapConcurent<K, V> {
     public synchronized void put(K key, V value) {
         int index = getBucketIndex(key);
 
-        if (buckets[index] == null) {
-            buckets[index] = new Node<>(key, value);
-        }
-
-        Node<K, V> node = buckets[index];
-        while (node != null) {
-            if (node.key.equals(key)) {
-                node.value = value;
-                return;
+        locks[index].lock();
+        try {
+            if (buckets[index] == null) {
+                buckets[index] = new Node<>(key, value);
             }
 
-            if (node.next == null) {
-                node.next = new Node<>(key, value);
-            }
+            Node<K, V> node = buckets[index];
+            while (node != null) {
+                if (node.key.equals(key)) {
+                    node.value = value;
+                    return;
+                }
 
-            node = node.next;
+                if (node.next == null) {
+                    node.next = new Node<>(key, value);
+                }
+
+                node = node.next;
+            }
+        } finally {
+            locks[index].unlock();
         }
     }
 
@@ -77,20 +93,26 @@ public class HashMapConcurent<K, V> {
      */
     public synchronized void remove(K key) {
         int index = getBucketIndex(key);
-        Node<K, V> prev = null;
-        Node<K, V> node = buckets[index];
 
-        while (node != null) {
-            if (node.key.equals(key)) {
-                if (prev == null) {
-                    buckets[index] = node.next;
-                } else {
-                    prev.next = node.next;
+        locks[index].lock();
+        try {
+            Node<K, V> prev = null;
+            Node<K, V> node = buckets[index];
+
+            while (node != null) {
+                if (node.key.equals(key)) {
+                    if (prev == null) {
+                        buckets[index] = node.next;
+                    } else {
+                        prev.next = node.next;
+                    }
+                    return;
                 }
-                return;
+                prev = node;
+                node = node.next;
             }
-            prev = node;
-            node = node.next;
+        } finally {
+            locks[index].unlock();
         }
     }
 
