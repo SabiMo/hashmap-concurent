@@ -7,18 +7,23 @@ import java.util.concurrent.locks.ReentrantLock;
  * La classe {@code HashMapConcurent} représente une HashMap implémenté de
  * façon concurente
  */
-public class HashMapConcurent<K, V> {
+public class HashMapConcurrent<K, V> {
     private final Node<K, V>[] buckets;
     private final ReentrantLock[] locks;
-    private static final int CAPACITY = 2;
+    private final int CAPACITY;
 
     /**
      * Constructeur de la classe {@code HashMapConcurent}.
      */
     @SuppressWarnings("unchecked")
-    public HashMapConcurent() {
-        this.buckets = new Node[CAPACITY];
-        locks = new ReentrantLock[CAPACITY];
+    public HashMapConcurrent() {
+        this(2);
+    }
+
+    public HashMapConcurrent(int capacity) {
+        this.CAPACITY = capacity;
+        this.buckets = new Node[capacity];
+        locks = new ReentrantLock[capacity];
         Arrays.setAll(locks, i -> new ReentrantLock());
     }
 
@@ -121,12 +126,18 @@ public class HashMapConcurent<K, V> {
      */
     public synchronized void printMap() {
         for (int i = 0; i < CAPACITY; i++) {
+            System.out.print("Bucket " + (i + 1) + "/" + CAPACITY + ": ");
             Node<K, V> node = buckets[i];
-
-            while (node != null) {
-                System.out.println(node.key + ", " + node.value);
-                node = node.next;
+            if (node == null) {
+                System.out.println(node);
+                continue;
+            } else {
+                System.out.print(node);
             }
+            for (node = node.next; node != null; node = node.next) {
+                System.out.print(", " + node);
+            }
+            System.out.println();
         }
     }
 }
