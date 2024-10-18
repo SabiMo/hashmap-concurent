@@ -8,24 +8,27 @@ public class App {
      * Méthode qui lance l'application.
      */
     public static void main(String[] args) {
-        HashMapConcurent<Integer, Integer> hashMapConcurent = new HashMapConcurent<>();
-        hashMapConcurent.put(1, 1);
-        hashMapConcurent.put(1, 2);
-        hashMapConcurent.put(1, 2);
-        hashMapConcurent.put(2, 2);
-        hashMapConcurent.put(3, 3);
-        hashMapConcurent.put(4, 4);
-        hashMapConcurent.put(5, 5);
+        HashMapConcurrent<Integer, Integer> hashMapConcurrent = new HashMapConcurrent<>(10);
+        hashMapConcurrent.put(1, 1);
+        hashMapConcurrent.put(1, 2);
+        hashMapConcurrent.put(1, 2);
+        hashMapConcurrent.put(2, 2);
+        hashMapConcurrent.put(3, 3);
+        hashMapConcurrent.put(4, 4);
+        hashMapConcurrent.put(5, 5);
+        hashMapConcurrent.put(6, 6);
+        hashMapConcurrent.put(7, 7);
+        hashMapConcurrent.put(8, 8);
+        hashMapConcurrent.put(9, 9);
+        hashMapConcurrent.put(10, 10);
+        hashMapConcurrent.put(11, 12);
+        hashMapConcurrent.put(12, 12);
 
-        hashMapConcurent.printMap();
-        System.out.println("");
+        hashMapConcurrent.printMap();
+        System.out.println();
 
-        hashMapConcurent.remove(1);
-        hashMapConcurent.printMap();
-        System.out.println("");
-
-        System.out.println(hashMapConcurent.get(1));
-        System.out.println(hashMapConcurent.get(2));
-
+        hashMapConcurrent.remove(1);
+        hashMapConcurrent.printMap();
+        System.out.println();
     }
 }
